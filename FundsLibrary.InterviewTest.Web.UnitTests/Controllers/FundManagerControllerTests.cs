@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using ExpectedObjects;
@@ -79,8 +80,9 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async void ShouldGetRedirectedToErrorFromEditPageIfNullGuid()
+        public async Task ShouldGetRedirectedToErrorFromEditPageIfNullGuid()
         {
+            //Arrange
             var validGuid = Guid.NewGuid();
             var mock = new Mock<IFundManagerRepository>();
             var fundManagerModel = new FundManager();
@@ -88,9 +90,13 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             mock.Setup(m => m.Get(validGuid)).Returns(Task.FromResult(fundManagerModel));
             var controller = new FundManagerController(mock.Object);
 
-            var result = await controller.Edit((Guid?)null);
+            //Act
+            var actual = await controller.Edit((Guid?)null);
 
-            Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
+            //Assert
+            Assert.That(actual, Is.TypeOf<RedirectToRouteResult>());
+            var redir = (RedirectToRouteResult)actual;
+            Assert.That("errorMessage", Is.EqualTo(redir.RouteValues.Keys.First()));
             mock.Verify();
         }
 
@@ -106,16 +112,19 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
 
             //Act
             var actual = await controller.Delete(validGuid);
-            
+
 
             //Assert
             Assert.That(actual, Is.TypeOf<RedirectToRouteResult>());
+            var redir = (RedirectToRouteResult)actual;
+            Assert.That("Index", Is.EqualTo(redir.RouteValues.Values.First()));
             mock.Verify();
         }
 
         [Test]
-        public async void ShouldGetRedirectedToErrorFromDeletePageIfNullGuid()
+        public async Task ShouldGetRedirectedToErrorFromDeletePageIfNullGuid()
         {
+            //Arrange
             var validGuid = Guid.NewGuid();
             var mock = new Mock<IFundManagerRepository>();
             var fundManagerModel = new FundManager();
@@ -123,9 +132,13 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             mock.Setup(m => m.Get(validGuid)).Returns(Task.FromResult(fundManagerModel));
             var controller = new FundManagerController(mock.Object);
 
-            var result = await controller.Delete(null);
+            //Act
+            var actual = await controller.Delete(null);
 
-            Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
+            //Assert
+            Assert.That(actual, Is.TypeOf<RedirectToRouteResult>());
+            var redir = (RedirectToRouteResult)actual;
+            Assert.That("errorMessage", Is.EqualTo(redir.RouteValues.Keys.First()));
             mock.Verify();
         }
     }
