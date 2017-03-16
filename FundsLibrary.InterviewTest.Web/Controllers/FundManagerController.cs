@@ -62,6 +62,22 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
             {
                 return _UnverifiedFundManagerId($"The Fund Manager id {id.Value} was not found");
             }
+
+            // Fake data. This should break a test.
+            result.Funds = new Fund[]
+            {
+                new Fund()
+                {
+                    IsinCode = "isin1",
+                    FullName = "fullname1",
+                },
+                new Fund()
+                {
+                    IsinCode = "isin2",
+                    FullName = "fullname2",
+                },
+            };
+
             return View(result);
         }
 
