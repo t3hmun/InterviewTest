@@ -18,7 +18,7 @@ namespace FundsLibrary.InterviewTest.Web.Repositories
 
         public async Task<IEnumerable<Fund>> GetFunds(Guid managerGuid)
         {
-            return await _client.GetAndReadFromContentGetAsync(managerGuid);
+            return await _client.GetFundsForManager(managerGuid);
         }
     }
 

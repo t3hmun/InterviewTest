@@ -11,7 +11,7 @@ namespace FundsLibrary.InterviewTest.Web.Repositories
 {
     public interface IOdataClientWrapper
     {
-        Task<IEnumerable<Fund>> GetAndReadFromContentGetAsync(Guid managerGuid);
+        Task<IEnumerable<Fund>> GetFundsForManager(Guid managerGuid);
     }
 
     /// <summary>
@@ -29,7 +29,7 @@ namespace FundsLibrary.InterviewTest.Web.Repositories
             _authToken = authToken;
         }
 
-        public async Task<IEnumerable<Fund>> GetAndReadFromContentGetAsync(Guid managerGuid)
+        public async Task<IEnumerable<Fund>> GetFundsForManager(Guid managerGuid)
         {
             using (var client = new HttpClient())
             {
@@ -45,6 +45,8 @@ namespace FundsLibrary.InterviewTest.Web.Repositories
                 response.EnsureSuccessStatusCode();
                 //TODO: Handle non success HTTP codes more gracefully.
 
+                //TODO: Make this less error prone.
+                //This is extremely error prone. Really should be model based with error defaults.
                 var rawJson = await response.Content.ReadAsStringAsync();
                 var values = JObject.Parse(rawJson)["value"].Children().ToList();
                 var funds = new List<Fund>();
@@ -54,10 +56,19 @@ namespace FundsLibrary.InterviewTest.Web.Repositories
                     var identification = staticdata["Identification"];
                     var isin = (string) identification["IsinCode"];
                     var fullname = (string) identification["FullName"];
+
+                    var essentials = staticdata["Essentials"];
+                    const string missing = "missing";
+                    var iasector = essentials == null ? missing : (string) essentials["IaSector"];
+                    var objectives = essentials == null ? missing : (string) essentials["Objectives"];
+                    var bench = essentials == null ? missing : (string) essentials["BenchmarkDescription"];
                     funds.Add(new Fund()
                     {
                         IsinCode = isin,
-                        FullName = fullname
+                        FullName = fullname,
+                        IASector = iasector,
+                        Objectives = objectives,
+                        BenchmarkDescription = bench
                     });
                 }
                 return funds;
