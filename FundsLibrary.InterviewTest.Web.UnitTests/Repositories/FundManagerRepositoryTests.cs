@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExpectedObjects;
 using FundsLibrary.InterviewTest.Common;
 using FundsLibrary.InterviewTest.Web.Repositories;
 using Moq;
@@ -32,7 +33,7 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Repositories
         }
 
         [Test]
-        public async void ShouldGet()
+        public async Task ShouldGet()
         {
             //Arrange
             var mockServiceClient = new Mock<IHttpClientWrapper>();
@@ -42,15 +43,18 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Repositories
                 .Setup(m => m.GetAndReadFromContentGetAsync<FundManager>("api/FundManager/" + guid))
                 .Returns(Task.FromResult(fundManager))
                 .Verifiable();
-            var fundManagerModel = new FundManager();
             var repository = new FundManagerRepository(mockServiceClient.Object);
 
+            // Don't reuse the fundManager object, it may have mutated due to the act.
+            // ExpectedObject lib compares the properties via eqality instead of the object.
+            var expectedFundManager = new FundManager().ToExpectedObject();
+
             //Act
-            var result = await repository.Get(guid);
+            var actualFundManager = await repository.Get(guid);
 
             //Assert
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result, Is.EqualTo(fundManagerModel));
+            Assert.That(actualFundManager, Is.Not.Null);
+            Assert.That(actualFundManager, Is.EqualTo(expectedFundManager));
             mockServiceClient.Verify();
         }
     }

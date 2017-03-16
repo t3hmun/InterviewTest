@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using ExpectedObjects;
 using FundsLibrary.InterviewTest.Common;
 using FundsLibrary.InterviewTest.Web.Controllers;
 using FundsLibrary.InterviewTest.Web.Repositories;
@@ -13,7 +14,7 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
     public class FundManagerControllerTests
     {
         [Test]
-        public async void ShouldGetIndexPage()
+        public async Task ShouldGetIndexPage()
         {
             //Arrange
             var mock = new Mock<IFundManagerRepository>();
@@ -22,18 +23,20 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
                 .Returns(Task.FromResult(fundManagerModels))
                 .Verifiable();
             var controller = new FundManagerController(mock.Object);
+            //NUnit-IS.EqualTo compares single dimensional arrays, so this will match.
+            var expected = new FundManager[0];
 
             //Act
-            var result = await controller.Index();
+            var actual = await controller.Index();
 
             //Assert
-            Assert.That(result, Is.TypeOf<ViewResult>());
-            Assert.That(((ViewResult)result).Model, Is.EqualTo(fundManagerModels));
+            Assert.That(actual, Is.TypeOf<ViewResult>());
+            Assert.That(((ViewResult)actual).Model, Is.EqualTo(expected));
             mock.Verify();
         }
 
         [Test]
-        public async void ShouldGetDetailsPage()
+        public async Task ShouldGetDetailsPage()
         {
             //Arrange
             var guid = Guid.NewGuid();
@@ -43,30 +46,36 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
                 .Returns(Task.FromResult(fundManagerModel))
                 .Verifiable();
             var controller = new FundManagerController(mock.Object);
+            
+            var expected = new FundManager().ToExpectedObject();
 
             //Act
-            var result = await controller.Details(guid);
+            var actual = await controller.Details(guid);
 
             //Assert
-            Assert.That(result, Is.TypeOf<ViewResult>());
-            Assert.That(((ViewResult)result).Model, Is.EqualTo(fundManagerModel));
+            Assert.That(actual, Is.TypeOf<ViewResult>());
+            Assert.That(((ViewResult)actual).Model, Is.EqualTo(expected));
         }
 
         [Test]
-        public async void ShouldGetEditPage()
+        public async Task ShouldGetEditPage()
         {
+            //Arrange
             var guid = Guid.NewGuid();
             var mock = new Mock<IFundManagerRepository>();
             var fundManagerModel = new FundManager();
             mock.SetupAllProperties();
             mock.Setup(m => m.Get(guid)).Returns(Task.FromResult(fundManagerModel));
             var controller = new FundManagerController(mock.Object);
+            var expected = new FundManager().ToExpectedObject();
 
-            var result = await controller.Edit(guid);
+            //Act
+            var actual = await controller.Edit(guid);
 
-            Assert.That(result, Is.TypeOf<ViewResult>());
+            //Assert
+            Assert.That(actual, Is.TypeOf<ViewResult>());
             mock.Verify();
-            Assert.That(((ViewResult)result).Model, Is.EqualTo(fundManagerModel));
+            Assert.That(((ViewResult)actual).Model, Is.EqualTo(expected));
         }
 
         [Test]
@@ -86,17 +95,21 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
         }
 
         [Test]
-        public async void ShouldGetIndexPageIfSuccessfulDelete()
+        public async Task ShouldGetIndexPageIfSuccessfulDelete()
         {
+            //Arrange
             var validGuid = Guid.NewGuid();
             var mock = new Mock<IFundManagerRepository>();
             mock.SetupAllProperties();
             mock.Setup(m => m.Delete(validGuid)).Returns(Task.FromResult(true));
             var controller = new FundManagerController(mock.Object);
 
-            var result = await controller.Delete(validGuid);
+            //Act
+            var actual = await controller.Delete(validGuid);
+            
 
-            Assert.That(result, Is.TypeOf<RedirectToRouteResult>());
+            //Assert
+            Assert.That(actual, Is.TypeOf<RedirectToRouteResult>());
             mock.Verify();
         }
 
