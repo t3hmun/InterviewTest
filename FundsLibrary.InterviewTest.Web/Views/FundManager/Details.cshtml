@@ -46,8 +46,28 @@
             <dd>
                 @Html.DisplayFor(model => fund.IsinCode)
             </dd>
+            <dt>
+                @Html.DisplayNameFor(model => fund.IASector)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => fund.IASector)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => fund.BenchmarkDescription)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => fund.BenchmarkDescription)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => fund.Objectives)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => fund.Objectives)
+            </dd>
         </dl>
     }
+    
+    <img src="https://www.fundslibrary.co.uk/FundsLibrary.DataApi.Web/img/Powered By FundsLibrary.png" alt="Powered By FundsLibrary" />
 </div>
 <div class="row">
     @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default col-sm-1" })
