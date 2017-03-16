@@ -1,11 +1,12 @@
-﻿@model FundsLibrary.InterviewTest.Common.FundManager
+﻿@using FundsLibrary.InterviewTest.Common
+@model FundsLibrary.InterviewTest.Common.FundManager
 
 @{
     ViewBag.Title = "Details";
 }
 
 <h1>Details</h1>
-
+<h2>Manager</h2>
 <div class="fund-manager-details">
     <dl class="dl-horizontal">
         <dt>
@@ -32,6 +33,21 @@
             @Html.DisplayFor(model => model.ManagedSince)
         </dd>
     </dl>
+</div>
+<h2>Funds Managed</h2>
+<div>
+    @foreach(var fund in Model.Funds)
+    {
+        <h3>@Html.DisplayFor(model => fund.FullName)</h3>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => fund.IsinCode)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => fund.IsinCode)
+            </dd>
+        </dl>
+    }
 </div>
 <div class="row">
     @Html.ActionLink("Back", "Index", null, new { @class = "btn btn-default col-sm-1" })
