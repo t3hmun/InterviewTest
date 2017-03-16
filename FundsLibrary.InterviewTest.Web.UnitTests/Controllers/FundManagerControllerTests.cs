@@ -18,12 +18,18 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
         public async Task ShouldGetIndexPage()
         {
             //Arrange
-            var mock = new Mock<IFundManagerRepository>();
+            var mockFundManRepo = new Mock<IFundManagerRepository>();
             IEnumerable<FundManager> fundManagerModels = new FundManager[0];
-            mock.Setup(m => m.GetAll())
+            mockFundManRepo.Setup(m => m.GetAll())
                 .Returns(Task.FromResult(fundManagerModels))
                 .Verifiable();
-            var controller = new FundManagerController(mock.Object);
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m=>m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mockFundManRepo.Object, mockFundRepo.Object);
+
             //NUnit-IS.EqualTo compares single dimensional arrays, so this will match.
             var expected = new FundManager[0];
 
@@ -33,7 +39,7 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             //Assert
             Assert.That(actual, Is.TypeOf<ViewResult>());
             Assert.That(((ViewResult)actual).Model, Is.EqualTo(expected));
-            mock.Verify();
+            mockFundManRepo.Verify();
         }
 
         [Test]
@@ -46,9 +52,14 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             mock.Setup(m => m.Get(guid))
                 .Returns(Task.FromResult(fundManagerModel))
                 .Verifiable();
-            var controller = new FundManagerController(mock.Object);
-            
-            var expected = new FundManager().ToExpectedObject();
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m => m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mock.Object, mockFundRepo.Object);
+
+            var expected = new FundManager { Funds = new List<Fund>() }.ToExpectedObject();
 
             //Act
             var actual = await controller.Details(guid);
@@ -67,7 +78,12 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             var fundManagerModel = new FundManager();
             mock.SetupAllProperties();
             mock.Setup(m => m.Get(guid)).Returns(Task.FromResult(fundManagerModel));
-            var controller = new FundManagerController(mock.Object);
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m => m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mock.Object, mockFundRepo.Object);
             var expected = new FundManager().ToExpectedObject();
 
             //Act
@@ -88,7 +104,12 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             var fundManagerModel = new FundManager();
             mock.SetupAllProperties();
             mock.Setup(m => m.Get(validGuid)).Returns(Task.FromResult(fundManagerModel));
-            var controller = new FundManagerController(mock.Object);
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m => m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mock.Object, mockFundRepo.Object);
 
             //Act
             var actual = await controller.Edit((Guid?)null);
@@ -108,7 +129,12 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             var mock = new Mock<IFundManagerRepository>();
             mock.SetupAllProperties();
             mock.Setup(m => m.Delete(validGuid)).Returns(Task.FromResult(true));
-            var controller = new FundManagerController(mock.Object);
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m => m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mock.Object, mockFundRepo.Object);
 
             //Act
             var actual = await controller.Delete(validGuid);
@@ -130,7 +156,12 @@ namespace FundsLibrary.InterviewTest.Web.UnitTests.Controllers
             var fundManagerModel = new FundManager();
             mock.SetupAllProperties();
             mock.Setup(m => m.Get(validGuid)).Returns(Task.FromResult(fundManagerModel));
-            var controller = new FundManagerController(mock.Object);
+            var mockFundRepo = new Mock<IFundRepository>();
+            IEnumerable<Fund> emptyFunds = new List<Fund>();
+            mockFundRepo.Setup(m => m.GetFunds(new Guid()))
+                .Returns(Task.FromResult(emptyFunds))
+                .Verifiable();
+            var controller = new FundManagerController(mock.Object, mockFundRepo.Object);
 
             //Act
             var actual = await controller.Delete(null);

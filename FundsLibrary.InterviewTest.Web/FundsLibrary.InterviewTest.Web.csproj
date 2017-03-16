@@ -223,6 +223,8 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="Installers\ManagersInstaller.cs" />
+    <Compile Include="Repositories\FundRepository.cs" />
+    <Compile Include="Repositories\OdataClientWrapper.cs" />
     <Compile Include="Services\FundsLibrarySignInManager.cs" />
     <Compile Include="Installers\RepositoriesInstaller.cs" />
     <Compile Include="Installers\ControllersInstaller.cs" />

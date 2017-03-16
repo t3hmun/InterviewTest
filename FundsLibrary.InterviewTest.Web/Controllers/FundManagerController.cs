@@ -11,18 +11,20 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
     [Authorize]
     public class FundManagerController : Controller
     {
-        private readonly IFundManagerRepository _repository;
+        private readonly IFundManagerRepository _fundManagerRepository;
+        private readonly IFundRepository _fundRepostory;
 
-        public FundManagerController(IFundManagerRepository repository)
+        public FundManagerController(IFundManagerRepository fundManagerRepository, IFundRepository fundRepostory)
         {
-            _repository = repository;
+            _fundManagerRepository = fundManagerRepository;
+            _fundRepostory = fundRepostory;
         }
 
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult> Index(string sortOrder = "", int? page = null)
         {
-            var fundManagersList = await _repository.GetAll();
+            var fundManagersList = await _fundManagerRepository.GetAll();
             ViewBag.CurrentSort = sortOrder;
 
             switch (sortOrder)
@@ -57,26 +59,14 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
             {
                 return _UnverifiedFundManagerId("A Fund Manager Id was not provided or was in an invalid format");
             }
-            var result = await _repository.Get(id.Value);
+            var result = await _fundManagerRepository.Get(id.Value);
             if (result == null)
             {
                 return _UnverifiedFundManagerId($"The Fund Manager id {id.Value} was not found");
             }
 
-            // Fake data. This should break a test.
-            result.Funds = new Fund[]
-            {
-                new Fund()
-                {
-                    IsinCode = "isin1",
-                    FullName = "fullname1",
-                },
-                new Fund()
-                {
-                    IsinCode = "isin2",
-                    FullName = "fullname2",
-                },
-            };
+            var funds = await _fundRepostory.GetFunds(result.Id);
+            result.Funds = funds;
 
             return View(result);
         }
@@ -97,7 +87,7 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _repository.Post(newManager);
+                var result = await _fundManagerRepository.Post(newManager);
                 return RedirectToAction("Details", new { id = result });
             }
             return View(newManager);
@@ -110,7 +100,7 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
             {
                 return _UnverifiedFundManagerId("A Fund Manager Id was not provided or was in an invalid format");
             }
-            await _repository.Delete(id.Value);
+            await _fundManagerRepository.Delete(id.Value);
             return RedirectToAction("Index");
         }
 
@@ -121,7 +111,7 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
             {
                 return _UnverifiedFundManagerId("A Fund Manager Id was not provided or was in an invalid format");
             }
-            var result = await _repository.Get(id.Value);
+            var result = await _fundManagerRepository.Get(id.Value);
             if (result == null)
             {
                 return _UnverifiedFundManagerId($"The Fund Manager id {id.Value} was not found");
@@ -134,7 +124,7 @@ namespace FundsLibrary.InterviewTest.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _repository.Put(editManager);
+                var result = await _fundManagerRepository.Put(editManager);
                 return RedirectToAction("Details", new { id = result });
             }
 
